@@ -1,0 +1,581 @@
+project description--
+
+FULL DEVELOPMENT LOGIC & FLOW — AI-Enhanced CLM PLATFORM
+🧱 1. System Architecture
+🔸 Frontend (Next.js + Tailwind + shadcn/ui)
+Responsive UI using Tailwind
+
+Clean UX with shadcn/ui (Cards, Dialogs, Tables, Menus, Sheet, Tooltip, Accordion)
+
+Lottie animations or Framer Motion for UI polish
+
+🔸 Backend (NestJS + PostgreSQL)
+REST/GraphQL API for all contract operations
+
+Role-based access control with guards
+
+Async queues for AI processing (BullMQ or Event-Driven with Redis)
+
+🔸 Firebase (Authentication & File Storage)
+Firebase Auth → ID token → Backend Verification
+
+Firebase Storage → Store PDF/DOCX → get public/signed URLs
+
+🔸 Database Schema (PostgreSQL)
+Key tables:
+
+users: name, email, role, org_id
+
+contracts: id, title, status, created_by, uploaded_file_url, expiry_date
+
+contract_versions: id, contract_id, file_url, created_at
+
+clauses: id, contract_id, type, text, risk_score
+
+comments: clause_id/version_id, user_id, text, position
+
+contract_summary: contract_id, summary_text, created_at
+
+reminders: contract_id, user_id, send_on
+
+activity_logs: action, actor, contract_id, timestamp
+
+📄 2. Contract Upload and Versioning
+Logic:
+Frontend file uploader → upload to Firebase Storage
+
+On success, send file metadata to backend:
+
+Original filename, Firebase URL, uploader ID
+
+Parse and extract plain text (using pdf-parse, docx or mammoth)
+
+Save contract + version entry
+
+Future uploads to same contract become new versions
+
+🗂 3. Contract Viewing Interface
+Logic:
+List all contracts with filtering (date, status, party, etc.)
+
+Display status chips (Draft, Review, Signed, Expired)
+
+Open any contract → see:
+
+File viewer
+
+Metadata
+
+AI summary (if available)
+
+Clauses, comments, risks, and timeline
+
+🔐 4. Authentication & Access Control
+Logic:
+Firebase handles email/password or OAuth login
+
+Firebase ID token → backend verifies + creates/updates user
+
+User roles: Admin, Legal, Viewer
+
+Backend guards check role before allowing access to routes
+
+🧠 5. AI/NLP Feature Suite
+📌 a. Clause Extraction
+On upload, extract key clauses using:
+
+Regex templates
+
+OpenAI function calling (extract_clause(type): {...})
+
+Save extracted clause text by type (Termination, Confidentiality, etc.)
+
+📌 b. Risk Term Detection
+Predefined rules (e.g., indemnity, auto-renewal)
+
+Use LLM or zero-shot classification to rate clauses: Low / Medium / High Risk
+
+Visual highlights in UI
+
+📌 c. Version Comparison
+Use text diff lib (e.g., diff-match-patch)
+
+Display inline diff between two versions
+
+Optional: LLM to summarize what's changed
+
+📌 d. Contract Q&A Assistant
+Embed contract chunks with LangChain or pgvector
+
+User question → similarity search → top 3-5 chunks
+
+LLM responds based on context
+
+📌 e. Auto Summary (5-Bullet)
+On upload or button click, send full text to LLM
+
+Summarize into 5 key points
+
+Save to contract_summary table
+
+📌 f. Smart Metadata Autofill
+LLM extracts:
+
+Effective date
+
+Parties
+
+Payment terms
+
+Fill backend fields with AI-generated values for editing/confirmation
+
+📌 g. Clause Recommendation
+From smart clause library
+
+Suggest clauses based on context using retrieval or classification
+
+Admin can approve/update master clause templates
+
+📌 h. Risk Score for Entire Contract
+Average clause risk
+
+Use weighted scoring model
+
+Show in UI as badge or gauge meter
+
+📌 i. AI-Based Similarity Search
+Given a clause, find similar clauses across contracts
+
+Useful for compliance/legal review
+
+📌 j. LLM Explanation for Clauses
+Button beside clause: “Explain this”
+
+LLM rewrites in plain English for quick understanding
+
+📌 k. AI Negotiation Assistant (Optional Bonus)
+Suggest redlines/changes
+
+“Make this less risky” → modifies clause via LLM
+
+“Suggest better termination clause”
+
+📌 l. OCR for Scanned PDFs
+Use Tesseract or AWS Textract
+
+Convert image-based contracts to searchable text before AI processing
+
+📬 6. Notifications & Reminders
+Logic:
+User sets expiry/reminder dates
+
+NestJS Cron (or Firebase Cloud Function) checks daily
+
+Sends email reminders via SendGrid or Mailgun
+
+🧾 7. Audit Trail & Activity Logs
+Logic:
+Every contract action (upload, edit, comment, AI change) logged
+
+Store who, what, when in activity_logs
+
+Display timeline on contract detail page
+
+🧑‍💼 8. Redlining & Commenting Interface
+Logic:
+Allow users to comment on clause or text section
+
+Store comment linked to version or clause
+
+Real-time updates via WebSocket or polling
+
+Accept/Reject suggestions (like Google Docs)
+
+📊 9. Analytics Dashboard
+Logic:
+Total contracts, pending, signed, expired
+
+Breakdown by counterparty, type, risk
+
+Show top risky contracts, upcoming renewals
+
+Use Recharts or Chart.js in shadcn panels
+
+✍️ 10. UI/UX Design (shadcn/ui)
+Key Principles:
+Use shadcn Sheet for side drawers (edit/view)
+
+Tabs for switching between Summary, AI, Clauses, Comments
+
+Dialog for pop-ups (Add Reminder, Upload Version)
+
+Table with pagination and filters for contract list
+
+Tooltip for AI explanations
+
+Accordion for clause sections
+
+Toast and Alert for user feedback
+
+Card and Badge components for statuses and summaries
+
+
+Testing: Playwright (UI), Jest (backend)
+
+
+FULL DEVELOPMENT LOGIC & FLOW — AI-Enhanced CLM PLATFORM
+🧱 1. System Architecture
+🔸 Frontend (Next.js + Tailwind + shadcn/ui)
+Responsive UI using Tailwind
+
+Clean UX with shadcn/ui (Cards, Dialogs, Tables, Menus, Sheet, Tooltip, Accordion)
+
+Lottie animations or Framer Motion for UI polish
+
+🔸 Backend (NestJS + PostgreSQL)
+REST/GraphQL API for all contract operations
+
+Role-based access control with guards
+
+Async queues for AI processing (BullMQ or Event-Driven with Redis)
+
+🔸 Firebase (Authentication & File Storage)
+Firebase Auth → ID token → Backend Verification
+
+Firebase Storage → Store PDF/DOCX → get public/signed URLs
+
+🔸 Database Schema (PostgreSQL)
+Key tables:
+
+users: name, email, role, org_id
+
+contracts: id, title, status, created_by, uploaded_file_url, expiry_date
+
+contract_versions: id, contract_id, file_url, created_at
+
+clauses: id, contract_id, type, text, risk_score
+
+comments: clause_id/version_id, user_id, text, position
+
+contract_summary: contract_id, summary_text, created_at
+
+reminders: contract_id, user_id, send_on
+
+activity_logs: action, actor, contract_id, timestamp
+
+📄 2. Contract Upload and Versioning
+Logic:
+Frontend file uploader → upload to Firebase Storage
+
+On success, send file metadata to backend:
+
+Original filename, Firebase URL, uploader ID
+
+Parse and extract plain text (using pdf-parse, docx or mammoth)
+
+Save contract + version entry
+
+Future uploads to same contract become new versions
+
+🗂 3. Contract Viewing Interface
+Logic:
+List all contracts with filtering (date, status, party, etc.)
+
+Display status chips (Draft, Review, Signed, Expired)
+
+Open any contract → see:
+
+File viewer
+
+Metadata
+
+AI summary (if available)
+
+Clauses, comments, risks, and timeline
+
+🔐 4. Authentication & Access Control
+Logic:
+Firebase handles email/password or OAuth login
+
+Firebase ID token → backend verifies + creates/updates user
+
+User roles: Admin, Legal, Viewer
+
+Backend guards check role before allowing access to routes
+
+🧠 5. AI/NLP Feature Suite
+📌 a. Clause Extraction
+On upload, extract key clauses using:
+
+Regex templates
+
+OpenAI function calling (extract_clause(type): {...})
+
+Save extracted clause text by type (Termination, Confidentiality, etc.)
+
+📌 b. Risk Term Detection
+Predefined rules (e.g., indemnity, auto-renewal)
+
+Use LLM or zero-shot classification to rate clauses: Low / Medium / High Risk
+
+Visual highlights in UI
+
+📌 c. Version Comparison
+Use text diff lib (e.g., diff-match-patch)
+
+Display inline diff between two versions
+
+Optional: LLM to summarize what's changed
+
+📌 d. Contract Q&A Assistant
+Embed contract chunks with LangChain or pgvector
+
+User question → similarity search → top 3-5 chunks
+
+LLM responds based on context
+
+📌 e. Auto Summary (5-Bullet)
+On upload or button click, send full text to LLM
+
+Summarize into 5 key points
+
+Save to contract_summary table
+
+📌 f. Smart Metadata Autofill
+LLM extracts:
+
+Effective date
+
+Parties
+
+Payment terms
+
+Fill backend fields with AI-generated values for editing/confirmation
+
+📌 g. Clause Recommendation
+From smart clause library
+
+Suggest clauses based on context using retrieval or classification
+
+Admin can approve/update master clause templates
+
+📌 h. Risk Score for Entire Contract
+Average clause risk
+
+Use weighted scoring model
+
+Show in UI as badge or gauge meter
+
+📌 i. AI-Based Similarity Search
+Given a clause, find similar clauses across contracts
+
+Useful for compliance/legal review
+
+📌 j. LLM Explanation for Clauses
+Button beside clause: “Explain this”
+
+LLM rewrites in plain English for quick understanding
+
+📌 k. AI Negotiation Assistant (Optional Bonus)
+Suggest redlines/changes
+
+“Make this less risky” → modifies clause via LLM
+
+“Suggest better termination clause”
+
+📌 l. OCR for Scanned PDFs
+Use Tesseract or AWS Textract
+
+Convert image-based contracts to searchable text before AI processing
+
+📬 6. Notifications & Reminders
+Logic:
+User sets expiry/reminder dates
+
+NestJS Cron (or Firebase Cloud Function) checks daily
+
+Sends email reminders via SendGrid or Mailgun
+
+🧾 7. Audit Trail & Activity Logs
+Logic:
+Every contract action (upload, edit, comment, AI change) logged
+
+Store who, what, when in activity_logs
+
+Display timeline on contract detail page
+
+🧑‍💼 8. Redlining & Commenting Interface
+Logic:
+Allow users to comment on clause or text section
+
+Store comment linked to version or clause
+
+Real-time updates via WebSocket or polling
+
+Accept/Reject suggestions (like Google Docs)
+
+📊 9. Analytics Dashboard
+Logic:
+Total contracts, pending, signed, expired
+
+Breakdown by counterparty, type, risk
+
+Show top risky contracts, upcoming renewals
+
+Use Recharts or Chart.js in shadcn panels
+
+✍️ 10. UI/UX Design (shadcn/ui)
+Key Principles:
+Use shadcn Sheet for side drawers (edit/view)
+
+Tabs for switching between Summary, AI, Clauses, Comments
+
+Dialog for pop-ups (Add Reminder, Upload Version)
+
+Table with pagination and filters for contract list
+
+Tooltip for AI explanations
+
+Accordion for clause sections
+
+Toast and Alert for user feedback
+
+Card and Badge components for statuses and summaries
+
+
+
+
+🔹 Phase 1: Project Setup & Tech Infrastructure
+Setup Next.js with TailwindCSS + shadcn/ui (for clean, modern UI) in folder name frontend
+
+Initialize NestJS backend project in  folder name backend
+
+Configure Firebase Auth and Storage
+
+Setup PostgreSQL with TypeORM or Prisma
+
+Create monorepo structure (if preferred) or CI/CD integration
+
+🔹 Phase 2: Authentication & Role Management
+Integrate Firebase Auth in frontend and backend (JWT middleware in NestJS)
+
+Implement RBAC (Admin, Legal, Viewer)
+
+Store additional user metadata (roles, orgs) in Postgres
+
+🔹 Phase 3: File Upload & Storage (Firebase)
+Build contract upload UI (drag & drop, PDF/Word)
+
+Upload to Firebase Storage
+
+Save metadata to PostgreSQL
+
+Show upload status & errors
+
+🔹 Phase 4: Contract Management Dashboard
+Create searchable, filterable contract list view
+
+Card/table UI using shadcn/ui
+
+Contract detail page with metadata and file preview
+
+Implement foldering/tagging UI
+
+🔹 Phase 5: Version Control System
+Store and display contract versions
+
+UI for viewing and switching between versions
+
+Backend endpoints to track version history
+
+🔹 Phase 6: Clause Extraction (AI/NLP)
+Extract key clauses using rule-based or transformer-based model
+
+Store clauses in DB and display with highlight UI
+
+Use OpenAI  via NestJS service
+
+🔹 Phase 7: Risk Term Detection
+Build NLP pipeline to highlight risky or non-compliant clauses
+
+Use color-coded highlighting (e.g., red for high-risk)
+
+Create “Risk Score” per contract
+
+🔹 Phase 8: LLM-Powered Q&A Assistant
+Embed contract text and store vectors (pgvector or Pinecone)
+
+Integrate LangChain 
+
+Create chat UI using shadcn components
+
+Use GPT for contract-based Q&A
+
+🔹 Phase 9: Auto-Summary (5-Bullet AI Summary)
+Send contract text to LLM with summarization prompt
+
+Store and display 5-bullet summary
+
+Trigger on upload and/or via button
+
+🔹 Phase 10: Reminders & Notifications
+Set expiry/renewal dates on contracts
+
+NestJS cron jobs or Firebase Cloud Functions
+
+Send emails via mailjet
+
+UI for setting custom reminders
+
+🔹 Phase 11: Redlining & Negotiation Workflow
+Commenting on specific clauses or versions
+
+Inline redlines using diff libraries
+
+Mark changes as accepted/rejected
+
+UI for internal/external threads
+
+🔹 Phase 12: Smart Clause Library
+Admin panel to manage reusable clauses
+
+Suggest clauses while editing
+
+Allow AI to insert and adapt clauses based on context
+
+🔹 Phase 13: AI-Powered Metadata Autofill
+Use AI to autofill:
+
+Effective dates, parties, jurisdiction, etc.
+
+Populate form fields after file upload
+
+Allow editing before saving
+
+🔹 Phase 14: Dashboard & Analytics
+Risk overview dashboard
+
+Pie/bar charts for statuses, contract types, risk levels
+
+Use Recharts or Chart.js with shadcn panels
+
+🔹Phase 15: Final QA, Testing, & Deployment
+End-to-end tests (Playwright/Cypress)
+
+Unit tests (Jest)
+
+Hosting on Vercel (frontend) & Render/Cloud Run (backend)
+
+README + video demo + .env.example
+
+Final polish of UI for enterprise feel
+
+
+✨ UI Focus (shadcn/ui)
+Use shadcn/ui's Card, Sheet, Tooltip, Modal, Tabs, Table, Dialogs
+
+Implement animations via framer-motion
+
+Consistent use of spacing, shadows, and type scale for clarity
+
+Create theme with soft gradients, accessible contrast, rounded corners

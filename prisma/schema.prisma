@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  role      Role     @default(VIEWER)
+  orgId     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contracts      Contract[]
+  comments       Comment[]
+  reminders      Reminder[]
+  activityLogs   ActivityLog[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  LEGAL
+  VIEWER
+}
+
+model Contract {
+  id               String   @id @default(uuid())
+  title            String
+  status           Status   @default(DRAFT)
+  createdById      String
+  uploadedFileUrl  String
+  expiryDate       DateTime?
+  effectiveDate    DateTime?
+  parties          String?
+  paymentTerms     String?
+  riskScore        Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  counterpartyName String?
+  contractType     String?
+
+  createdBy        User     @relation(fields: [createdById], references: [id])
+  versions         ContractVersion[]
+  clauses          Clause[]
+  comments         Comment[]
+  summaries        ContractSummary[]
+  reminders        Reminder[]
+  activityLogs     ActivityLog[]
+  qaItems          ContractQa[]
+  riskTerms        RiskTerm[]
+
+  @@map("contracts")
+}
+
+enum Status {
+  DRAFT
+  REVIEW
+  SIGNED
+  EXPIRED
+}
+
+model ContractVersion {
+  id         String   @id @default(uuid())
+  contractId String
+  fileUrl    String
+  plainText  String?   @db.Text
+  versionNumber Int      @default(1)
+  createdAt  DateTime @default(now())
+
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  comments   Comment[]
+
+  @@map("contract_versions")
+}
+
+model Clause {
+  id         String       @id @default(uuid())
+  contractId String
+  type       String
+  text       String       @db.Text
+  riskScore  RiskLevel    @default(LOW)
+  createdAt  DateTime     @default(now())
+
+  contract   Contract     @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  comments   Comment[]
+
+  @@map("clauses")
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Comment {
+  id              String    @id @default(uuid())
+  contractId      String
+  userId          String
+  text            String
+  position        String?
+  clauseId        String?
+  contractVersionId String?
+  createdAt       DateTime  @default(now())
+
+  contract        Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id])
+  clause          Clause?   @relation(fields: [clauseId], references: [id])
+  contractVersion ContractVersion? @relation(fields: [contractVersionId], references: [id])
+
+  @@map("comments")
+}
+
+model ContractSummary {
+  id         String   @id @default(uuid())
+  contractId String
+  summaryText String    @db.Text
+  createdAt  DateTime @default(now())
+
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("contract_summaries")
+}
+
+model Reminder {
+  id         String   @id @default(uuid())
+  contractId String
+  userId     String
+  sendOn     DateTime
+  message    String
+  isActive   Boolean   @default(true)
+  createdAt  DateTime @default(now())
+
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("reminders")
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  action     String
+  actorId    String
+  contractId String
+  details    String?   @db.Text
+  timestamp  DateTime @default(now())
+
+  actor      User     @relation(fields: [actorId], references: [id])
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+model RiskTerm {
+  id          String    @id @default(uuid())
+  contractId  String
+  term        String
+  context     String    @db.Text
+  riskLevel   RiskLevel
+  description String
+  createdAt   DateTime  @default(now())
+
+  contract    Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("risk_terms")
+}
+
+model ContractQa {
+  id          String    @id @default(uuid())
+  contractId  String
+  question    String
+  answer      String    @db.Text
+  createdAt   DateTime  @default(now())
+
+  contract    Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("contract_qa")
+} 
