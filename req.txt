@@ -472,6 +472,51 @@ Save metadata to PostgreSQL
 
 Show upload status & errors
 
+
+note  ---- most important feature--- 🚀 Project: AI-Powered Contract Review Flow
+
+Goal: Extract clean, structured plain text from uploaded PDF or DOCX contract files stored in Firebase Storage.
+
+📁 Step 1: Upload to Firebase
+- Accept `.pdf` or `.docx` file from the user.
+- Upload to Firebase Storage under a user-specific folder.
+- Get the public download URL or a signed URL.
+
+📄 Step 2: Extract Plain Text
+- Download the file from Firebase using the URL.
+- If PDF:
+  - Use `pdf-parse` (Node.js) or `PyMuPDF / pdfplumber` (Python) to extract raw text.
+- If DOCX:
+  - Use `mammoth` (Node.js) or `python-docx` (Python) to extract clean paragraphs without styling.
+- Normalize and clean:
+  - Remove headers/footers, line breaks, unnecessary whitespace.
+  - Structure text by sections/clauses (if possible).
+
+🎯 Output:
+- Return extracted plain text for further processing (e.g., chunking, embedding).
+- Include metadata:
+  - File type (PDF or DOCX)
+  - Source file URL
+  - User ID (optional)
+  - Token count
+
+📦 Tech Notes:
+- Language: Node.js or Python
+- Firebase: Use Admin SDK or Firebase Storage REST API
+- Error handling: Validate file type, size, and parseability
+- Consider retry logic for file fetch or parse failures
+
+- Make this process asynchronous if the file is large
+
+Tech Stack:
+- Backend: NestJS
+- File Upload: Firebase Storage
+- AI: OpenAI GPT-3.5 API
+- File Parsing: Node.js libraries
+
+Please give me production-quality modular code for this flow.
+
+
 🔹 Phase 4: Contract Management Dashboard
 Create searchable, filterable contract list view
 
@@ -557,7 +602,7 @@ Risk overview dashboard
 
 Pie/bar charts for statuses, contract types, risk levels
 
-Use Recharts or Chart.js with shadcn panels
+Use  Chart.js with shadcn panels
 
 🔹Phase 15: Final QA, Testing, &
 End-to-end tests (Playwright/Cypress)

@@ -1,104 +1,98 @@
-# AI-CLM Platform Frontend
+# Contract Lifecycle Management Platform
 
-This is the frontend for the AI-Augmented Contract Lifecycle Management Platform, built with Next.js, TailwindCSS, and shadcn/ui.
+A modern, AI-powered contract management system built with Next.js, Firebase, and NestJS.
 
 ## Features
 
-- Modern UI with shadcn/ui components
-- Contract management dashboard
-- File upload interface
-- Contract viewing and analysis
-- User authentication with Firebase
-- Role-based access control
-
-## Folder Structure
-
-```
-frontend/
-├── app/                 # Next.js App Router structure
-│   ├── api/             # API routes
-│   ├── auth/            # Authentication pages
-│   ├── contracts/       # Contract management pages
-│   ├── dashboard/       # Dashboard pages
-│   ├── layout.tsx       # Root layout
-│   └── page.tsx         # Homepage
-├── components/          # React components
-│   ├── contracts/       # Contract-related components
-│   ├── dashboard/       # Dashboard components
-│   ├── layout/          # Layout components
-│   ├── ui/              # shadcn/ui components
-│   └── users/           # User-related components
-├── lib/                 # Utility functions
-│   ├── firebase.ts      # Firebase configuration
-│   └── utils.ts         # Helper functions
-├── public/              # Static assets
-└── styles/              # Global styles
-```
+- Upload and manage contracts (PDF, DOCX, DOC)
+- Extract and analyze contract text
+- Track contract versions and changes
+- AI-powered contract analysis and risk detection
+- User authentication and role-based access control
+- Secure file storage with Firebase
 
 ## Getting Started
 
-1. Install dependencies:
-   ```
-   npm install
-   ```
+### Prerequisites
 
-2. Set up environment variables by creating a `.env.local` file:
-   ```
-   NEXT_PUBLIC_API_URL=http://localhost:3001/api
-   
-   # Firebase config
-   NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-   NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-   ```
+- Node.js 16+
+- npm or yarn
+- Firebase account
 
-3. Start the development server:
-   ```
-   npm run dev
-   ```
+### Setup Instructions
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+1. Clone the repository
+2. Install dependencies:
 
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build the application for production
-- `npm start` - Start the production server
-- `npm run lint` - Run ESLint
-
-## shadcn/ui Components
-
-This project uses the following shadcn/ui components:
-
-- Button
-- Card
-- Dialog
-- Table
-- Sheet
-- Tooltip
-- Accordion
-
-Additional components can be added as needed using:
-```
-npx shadcn add <component-name>
+```bash
+cd frontend
+npm install
 ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Configure Firebase:
 
-## Learn More
+The application uses a Firebase service account for authentication and storage operations. The service account credentials are stored in `firebase/serviceAccount.json`.
 
-To learn more about Next.js, take a look at the following resources:
+- Create a Firebase project in the [Firebase Console](https://console.firebase.google.com/)
+- Generate a new private key for your service account:
+  - Go to Project Settings > Service accounts
+  - Click "Generate new private key"
+  - Save the JSON file as `firebase/serviceAccount.json` in the project
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Set up environment variables:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Run the setup script
+node setup-env.js
+```
 
-## Deploy on Vercel
+This will create a `.env.local` file with the necessary configuration.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Start the development server:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run dev
+```
+
+## Project Structure
+
+- `/src/app` - Next.js app router pages and API routes
+- `/src/components` - React components
+- `/src/contexts` - React context providers
+- `/src/services` - Service modules for API interactions
+- `/src/config` - Configuration files
+- `/src/hooks` - Custom React hooks
+- `/src/styles` - Global styles and Tailwind configuration
+- `/src/types` - TypeScript type definitions
+- `/firebase` - Firebase configuration and service account
+
+## Firebase Integration
+
+The application uses Firebase for:
+
+1. **Authentication** - User login and registration
+2. **Storage** - Secure contract file storage
+3. **Firestore** - Contract metadata and user data
+
+The Firebase Admin SDK is used for server-side operations, such as:
+- Generating signed URLs for secure file access
+- Verifying ID tokens for API authentication
+- Managing user roles and permissions
+- Performing secure database operations
+
+## API Routes
+
+The application provides the following API endpoints:
+
+- `POST /api/contracts` - Create a new contract
+- `GET /api/contracts` - Get all contracts
+- `GET /api/contracts/[id]` - Get a contract by ID
+- `PATCH /api/contracts/[id]` - Update a contract
+- `DELETE /api/contracts/[id]` - Delete a contract
+- `POST /api/contracts/extract` - Extract text from a contract file
+- `POST /api/auth/verify` - Verify a Firebase ID token
+- `POST /api/auth/token` - Create a custom Firebase token
+
+## License
+
+This project is licensed under the MIT License.

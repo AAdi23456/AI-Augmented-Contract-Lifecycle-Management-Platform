@@ -1,35 +1,34 @@
 {
-  "dependencies": {
-    "@nestjs/typeorm": "^11.0.0",
-    "@radix-ui/react-toast": "^1.2.14",
-    "axios": "^1.6.7",
-    "firebase": "^10.8.1",
-    "lucide-react": "^0.515.0",
-    "next": "^14.1.3",
-    "openai": "^5.3.0",
-    "pg": "^8.16.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.24"
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^6.4.2",
-    "@testing-library/react": "^14.2.1",
-    "@testing-library/user-event": "^14.5.2",
-    "@types/node": "^20.11.24",
-    "@types/react": "^18.2.61",
-    "@types/react-dom": "^18.2.19",
-    "@vitejs/plugin-react": "^4.2.1",
-    "jsdom": "^24.0.0",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.4",
-    "vitest": "^1.3.1"
-  },
+  "name": "hr-helpdesk",
+  "version": "1.0.0",
+  "description": "HR Helpdesk application with document processing capabilities",
+  "main": "index.js",
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run start:dev",
+    "build": "concurrently \"npm run build:frontend\" \"npm run build:backend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start"
+  },
+  "keywords": [
+    "hr",
+    "helpdesk",
+    "document",
+    "processing",
+    "nextjs",
+    "nestjs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "pg": "^8.16.0",
+    "uuid": "^11.1.0"
   }
 }
